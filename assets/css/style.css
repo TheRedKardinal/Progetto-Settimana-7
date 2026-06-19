@@ -78,6 +78,22 @@ header .btn {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+.titolo-eventi {
+  width: 100%;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #193366;
+}
+
+.col-eventi {
+  width: 100%;
+}
+
+@media (min-width: 792px) {
+  .col-eventi {
+    width: 50%;
+  }
+}
+
 /*
 Colori previsti:
 header: #193366

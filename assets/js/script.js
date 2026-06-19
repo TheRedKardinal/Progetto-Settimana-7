@@ -195,16 +195,18 @@ function creaColonneEventi(cardBody) {
     cardBody.appendChild(righe);
 
     const colProssimi = document.createElement('div');
-    colProssimi.classList.add('col-6');
+    colProssimi.classList.add('col-eventi');
     const titoloProssimi = document.createElement('h6');
+    titoloProssimi.classList.add('titolo-eventi');
     titoloProssimi.textContent = 'Prossimi eventi';
     const listaProssimi = document.createElement('div');
     colProssimi.appendChild(titoloProssimi);
     colProssimi.appendChild(listaProssimi);
 
     const colUltimi = document.createElement('div');
-    colUltimi.classList.add('col-6');
+    colUltimi.classList.add('col-eventi');
     const titoloUltimi = document.createElement('h6');
+    titoloUltimi.classList.add('titolo-eventi');
     titoloUltimi.textContent = 'Ultimi risultati';
     const listaUltimi = document.createElement('div');
     colUltimi.appendChild(titoloUltimi);
