@@ -26,28 +26,19 @@
 
   <main class="container">
 
-    <section id="risultati-section">
-      <!-- Spinner, errore, lista risultati ricerca squadre -->
-      <div id="lista-squadre" class="row justify-content-center gx-3 gy-3">
-        <!-- CARD1 -->
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body d-flex flex-column align-items-center">
-              <h5 class="card-title text-center">Card title</h5>
-              <p class="card-text text-center">Some quick example text to build on the card title and make up the bulk
-                of
-                the card’s
-                content.</p>
-              <a href="#" class="btn btn-primary w-100"><i class="bi bi-trash-fill"></i> Rimuovi</a>
-            </div>
-          </div>
-        </div>
-      </div>
+    <section id="preferiti-section">
+      <h2><i class="bi bi-star-fill"></i> Le tue squadre preferite</h2>
+      <div id="lista-preferiti" class="row justify-content-center gx-3 gy-3"></div>
     </section>
 
-    <section id="dettagli-section" hidden>
-      <!-- Visibile dopo click su una squadra: prossimi eventi + ultimi risultati -->
+    <section id="risultati-section">
+      <!-- Spinner, errore, lista risultati ricerca squadre -->
+      <div id="spinner-ricerca" class="text-center my-4" hidden>
+        <div class="spinner-border" role="status"></div>
+      </div>
+      <h2>Squadre trovate</h2>
+      <div id="lista-squadre" class="row justify-content-center gx-3 gy-3">
+      </div>
     </section>
 
   </main>

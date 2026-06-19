@@ -85,66 +85,166 @@ async function caricaDettagli(idTeam) {
 
 }
 // === Stato ===
+let preferiti = JSON.parse(localStorage.getItem('preferiti')) || [];
 
+function salvaPreferiti() {
+    localStorage.setItem('preferiti', JSON.stringify(preferiti));
+}
 
+function isPreferita(idSquadra) {
+    return preferiti.some(p => p.id === idSquadra);
+}
+
+function aggiungiPreferito(squadra) {
+    if (isPreferita(squadra.id)) return;
+    preferiti.push(squadra);
+    salvaPreferiti();
+    renderPreferiti();
+}
+
+function rimuoviPreferito(idSquadra) {
+    preferiti = preferiti.filter(p => p.id !== idSquadra);
+    salvaPreferiti();
+    renderPreferiti();
+}
 
 // === Render ===
 const contenitoreSquadre = document.getElementById('lista-squadre');
+const contenitorePreferiti = document.getElementById('lista-preferiti');
 
-function renderSquadre(squadre) {
+function creaCardBase(squadra) {
+    const col = document.createElement('div');
+    col.classList.add('col-12', 'col-md-6', 'col-lg-4');
+
+    const card = document.createElement('div');
+    card.classList.add('card');
+    col.appendChild(card);
+
+    const img = document.createElement('img');
+    img.src = squadra.logo;
+    img.classList.add('card-img-top');
+    card.appendChild(img);
+
+    const cardBody = document.createElement('div');
+    cardBody.classList.add('card-body', 'd-flex', 'flex-column', 'align-items-center');
+    card.appendChild(cardBody);
+
+    const titolo = document.createElement('h5');
+    titolo.classList.add('card-title', 'text-center');
+    titolo.textContent = squadra.nome;
+    cardBody.appendChild(titolo);
+
+    const sottotitolo = document.createElement('p');
+    sottotitolo.classList.add('card-text', 'text-center');
+    sottotitolo.textContent = squadra.lega + ' — ' + squadra.paese;
+    cardBody.appendChild(sottotitolo);
+
+    return { col, card, cardBody };
+}
+
+function renderEventi(contenitore, eventi) {
+    contenitore.replaceChildren();
+    if (eventi.length === 0) {
+        const vuoto = document.createElement('p');
+        vuoto.classList.add('fst-italic');
+        vuoto.textContent = 'Nessun evento in programma';
+        contenitore.appendChild(vuoto);
+        return;
+    }
+    eventi.forEach(evento => {
+        const riga = document.createElement('p');
+        riga.textContent = evento.casa + ' vs ' + evento.trasferta + ' — ' + evento.dataPartita() + ' — ' + evento.punteggioFormattato();
+        contenitore.appendChild(riga);
+    });
+}
+
+function renderPreferiti() {
+    contenitorePreferiti.replaceChildren();
+    preferiti.forEach(squadra => {
+        const { col, cardBody } = creaCardBase(squadra);
+
+        const bottone = document.createElement('button');
+        bottone.classList.add('btn', 'btn-primary', 'w-100');
+        bottone.innerHTML = '<i class="bi bi-trash-fill"></i> Rimuovi';
+        bottone.addEventListener('click', () => rimuoviPreferito(squadra.id));
+
+        cardBody.appendChild(bottone);
+        contenitorePreferiti.appendChild(col);
+    });
+}
+
+async function renderSquadre(squadre) {
     contenitoreSquadre.replaceChildren();
     if (typeof squadre === 'string') {
         const p = document.createElement('p');
         p.textContent = squadre;
-        p.classList.add('text-center');
+        p.classList.add(...(squadre.includes('Errore') ? ['alert', 'alert-danger', 'text-center'] : ['text-center']));
         contenitoreSquadre.appendChild(p);
         return;
     }
 
-    squadre.forEach(squadra => {
-        const col = document.createElement('div');
-        col.classList.add('col-12', 'col-md-6', 'col-lg-4');
-
-        const card = document.createElement('div');
-        card.classList.add('card');
-
-        col.appendChild(card);
+    squadre.forEach(async squadra => {
+        const { col, cardBody } = creaCardBase(squadra);
         contenitoreSquadre.appendChild(col);
 
-        const img = document.createElement('img');
-        img.src = squadra.logo;
-        img.classList.add('card-img-top');
-
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card-body', "d-flex", "flex-column", "align-items-center");
-
-        const titolo = document.createElement('h5');
-        titolo.classList.add('card-title', 'text-center');
-        titolo.textContent = squadra.nome;
-
-        const sottotitolo = document.createElement('p');
-        sottotitolo.classList.add('card-text', 'text-center');
-        sottotitolo.textContent = squadra.lega + '-' + squadra.paese;
-
         const bottone = document.createElement('button');
-        bottone.classList.add('btn', 'btn-primary', 'w-100');
-        bottone.textContent = 'Vedi dettagli';
-        bottone.addEventListener('click', () => caricaDettagli(squadra.id));
-
-        cardBody.appendChild(titolo);
-        cardBody.appendChild(sottotitolo);
+        bottone.classList.add('btn', 'btn-aggiungi', 'w-100', 'mb-2');
+        bottone.textContent = isPreferita(squadra.id) ? 'Già nei preferiti' : 'Aggiungi ai preferiti';
+        bottone.disabled = isPreferita(squadra.id);
+        bottone.addEventListener('click', () => {
+            aggiungiPreferito(squadra);
+            bottone.textContent = 'Già nei preferiti';
+            bottone.disabled = true;
+        });
         cardBody.appendChild(bottone);
-        card.appendChild(img);
-        card.appendChild(cardBody);
+
+        const righe = document.createElement('div');
+        righe.classList.add('row', 'w-100');
+        cardBody.appendChild(righe);
+
+        const colProssimi = document.createElement('div');
+        colProssimi.classList.add('col-6');
+        const titoloProssimi = document.createElement('h6');
+        titoloProssimi.textContent = 'Prossimi eventi';
+        const listaProssimi = document.createElement('div');
+        colProssimi.appendChild(titoloProssimi);
+        colProssimi.appendChild(listaProssimi);
+
+        const colUltimi = document.createElement('div');
+        colUltimi.classList.add('col-6');
+        const titoloUltimi = document.createElement('h6');
+        titoloUltimi.textContent = 'Ultimi risultati';
+        const listaUltimi = document.createElement('div');
+        colUltimi.appendChild(titoloUltimi);
+        colUltimi.appendChild(listaUltimi);
+
+        righe.appendChild(colProssimi);
+        righe.appendChild(colUltimi);
+
+        const dettagli = await caricaDettagli(squadra.id);
+        if (typeof dettagli === 'string') {
+            listaProssimi.textContent = dettagli;
+            listaUltimi.textContent = dettagli;
+            return;
+        }
+        renderEventi(listaProssimi, dettagli.prossimi);
+        renderEventi(listaUltimi, dettagli.ultimi);
     });
 }
-
 
 // === Eventi ===
 const form = document.getElementById('ricerca');
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const query = document.getElementById('search').value;
+
+    document.getElementById('spinner-ricerca').hidden = false;
+    contenitoreSquadre.replaceChildren();
+
     const risultato = await cercaSquadre(query);
+
+    document.getElementById('spinner-ricerca').hidden = true;
     renderSquadre(risultato);
-})
+});
+
+renderPreferiti();

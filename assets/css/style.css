@@ -44,6 +44,19 @@ header .btn {
   color: #AA0000;
 }
 
+.btn-primary:hover {
+  background-color: #ffd0d0;
+}
+
+.btn-aggiungi {
+  background-color: hsl(45, 90%, 55%);
+  color: #1a1a1a;
+}
+
+.btn-aggiungi:hover {
+  background-color: hsl(45, 90%, 48%);
+}
+
 /*
 Colori previsti:
 header: #193366
