@@ -14,9 +14,39 @@
 
 
 // === Classi ===
+class Squadra {
+    constructor(idTeam, strTeam, strTeamBadge, strLeague, strCountry) {
+        this.id = idTeam;
+        this.nome = strTeam;
+        this.logo = strTeamBadge;
+        this.lega = strLeague;
+        this.paese = strCountry;
+    }
 
+}
 
+class Evento {
+    constructor(idEvent, dateEvent, strHomeTeam, strAwayTeam, intHomeScore, intAwayScore) {
+        this.id = idEvent;
+        this.data = dateEvent;
+        this.casa = strHomeTeam;
+        this.trasferta = strAwayTeam;
+        this.punteggioCasa = intHomeScore;
+        this.punteggioTrasferta = intAwayScore;
+    }
 
+    dataPartita() {
+        const parteData = this.data.split('-');
+        return parteData[2] + '/' + parteData[1] + '/' + parteData[0];
+    }
+
+    punteggioFormattato() {
+        if (this.punteggioCasa === null) {
+            return 'Da giocare';
+        }
+        return this.punteggioCasa + ' - ' + this.punteggioTrasferta;
+    }
+}
 // === API ===
 
 

@@ -37,6 +37,12 @@ header .btn {
   color: #193366;;
 } 
 
+/* ***** SECTION RISULTATI ***** */
+/* ***** CARD ***** */
+.btn-primary {
+  background-color: #ffe5e5;
+  color: #AA0000;
+}
 
 /*
 Colori previsti:
