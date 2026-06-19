@@ -48,7 +48,20 @@ class Evento {
     }
 }
 // === API ===
-
+async function cercaSquadre(query) {
+    try {
+        const squadra = await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${query}`);
+        const dati = await squadra.json();
+        if (dati.teams === null) {
+            return 'Nessuna squadra corrisponde alla ricerca';
+        }
+        const squadre = dati.teams.map(item => new Squadra(item.idTeam, item.strTeam, item.strTeamBadge, item.strLeague, item.strCountry));
+        return squadre;
+    } catch (errore) {
+        console.error(errore);
+        return 'Errore durante la ricerca, riprova più tardi.';
+    }
+}
 
 
 // === Stato ===
