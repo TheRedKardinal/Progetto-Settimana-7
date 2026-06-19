@@ -93,3 +93,10 @@ async function caricaDettagli(idTeam) {
 
 
 // === Eventi ===
+const form = document.getElementById('ricerca');
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const query = document.getElementById('search').value;
+    const risultato = await cercaSquadre(query);
+    console.log(risultato);
+})
