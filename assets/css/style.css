@@ -57,6 +57,12 @@ header .btn {
   background-color: hsl(45, 90%, 48%);
 }
 
+.card-img-top {
+  height: 160px;
+  object-fit: contain;
+  padding: 16px;
+}
+
 /*
 Colori previsti:
 header: #193366

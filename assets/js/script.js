@@ -112,9 +112,9 @@ function rimuoviPreferito(idSquadra) {
 const contenitoreSquadre = document.getElementById('lista-squadre');
 const contenitorePreferiti = document.getElementById('lista-preferiti');
 
-function creaCardBase(squadra) {
+function creaCardBase(squadra, classiColonna = ['col-12', 'col-md-6', 'col-lg-4']) {
     const col = document.createElement('div');
-    col.classList.add('col-12', 'col-md-6', 'col-lg-4');
+    col.classList.add(...classiColonna);
 
     const card = document.createElement('div');
     card.classList.add('card');
@@ -135,7 +135,7 @@ function creaCardBase(squadra) {
     cardBody.appendChild(titolo);
 
     const sottotitolo = document.createElement('p');
-    sottotitolo.classList.add('card-text', 'text-center');
+    sottotitolo.classList.add('card-text', 'text-center', 'text-muted');
     sottotitolo.textContent = squadra.lega + ' — ' + squadra.paese;
     cardBody.appendChild(sottotitolo);
 
@@ -146,14 +146,36 @@ function renderEventi(contenitore, eventi) {
     contenitore.replaceChildren();
     if (eventi.length === 0) {
         const vuoto = document.createElement('p');
-        vuoto.classList.add('fst-italic');
+        vuoto.classList.add('fst-italic', 'text-muted');
         vuoto.textContent = 'Nessun evento in programma';
         contenitore.appendChild(vuoto);
         return;
     }
     eventi.forEach(evento => {
-        const riga = document.createElement('p');
-        riga.textContent = evento.casa + ' vs ' + evento.trasferta + ' — ' + evento.dataPartita() + ' — ' + evento.punteggioFormattato();
+        const riga = document.createElement('div');
+        riga.classList.add('mb-2', 'pb-2', 'border-bottom');
+
+        const data = document.createElement('div');
+        data.classList.add('text-muted', 'small');
+        data.textContent = evento.dataPartita();
+        riga.appendChild(data);
+
+        const partita = document.createElement('div');
+        partita.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+
+        const squadre = document.createElement('span');
+        squadre.classList.add('fw-bold');
+        squadre.textContent = evento.casa + ' vs ' + evento.trasferta;
+        partita.appendChild(squadre);
+
+        if (evento.punteggioCasa !== null) {
+            const badge = document.createElement('span');
+            badge.classList.add('badge', 'bg-success');
+            badge.textContent = evento.punteggioFormattato();
+            partita.appendChild(badge);
+        }
+
+        riga.appendChild(partita);
         contenitore.appendChild(riga);
     });
 }
@@ -184,7 +206,7 @@ async function renderSquadre(squadre) {
     }
 
     squadre.forEach(async squadra => {
-        const { col, cardBody } = creaCardBase(squadra);
+        const { col, cardBody } = creaCardBase(squadra, ['col-12']);
         contenitoreSquadre.appendChild(col);
 
         const bottone = document.createElement('button');
