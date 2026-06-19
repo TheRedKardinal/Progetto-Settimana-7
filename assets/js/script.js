@@ -63,7 +63,27 @@ async function cercaSquadre(query) {
     }
 }
 
+async function caricaDettagli(idTeam) {
+    try {
+        const [rispostaProssimi, rispostaUltimi] = await Promise.all([
+            fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=${idTeam}`),
+            fetch(`https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=${idTeam}`)
+        ]);
+        const datiProssimi = await rispostaProssimi.json();
+        const datiUltimi = await rispostaUltimi.json();
+        const prossimi = datiProssimi.events === null
+            ? []
+            : datiProssimi.events.map(item => new Evento(item.idEvent, item.dateEvent, item.strHomeTeam, item.strAwayTeam, item.intHomeScore, item.intAwayScore));
+        const ultimi = datiUltimi.results === null
+            ? []
+            : datiUltimi.results.map(item => new Evento(item.idEvent, item.dateEvent, item.strHomeTeam, item.strAwayTeam, item.intHomeScore, item.intAwayScore));
+        return { prossimi, ultimi };
+    } catch (errore) {
+        console.error(errore);
+        return 'Errore durante la ricerca, riprova più tardi.';
+    }
 
+}
 // === Stato ===
 
 
