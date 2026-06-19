@@ -1,0 +1,51 @@
+/* SportsHub — Week Project Settimana VII
+   Reset minimale + tipografia di base. Aggiungi qui le tue regole. */
+
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #f4f6fa;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.site-header {
+  background-color: hsl(220, 60%, 25%);
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+
+/* Aggiungi qui le tue regole per: form, risultati, card squadra, eventi. */
+/* ***** HEADER ***** */
+header {
+  background-color: #193366;
+}
+
+header .btn {
+  color: #193366;;
+} 
+
+
+/*
+Colori previsti:
+header: #193366
+sfondo: #F4F6FA
+button rimuovi: sfondo #ffe5e5, carattere #AA0000, hover ffd0d0
+button aggiungi: sfondo hsl(45, 90%, 55%), hover hsl(45, 90%, 48%)
+Endpoint:
+https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=nome_squadra (ricerca squadra)
+https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=id_squadra (prossimo evento)
+https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=id_squadra (ultimo evento)
+*/
