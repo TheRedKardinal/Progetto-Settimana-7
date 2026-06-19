@@ -100,19 +100,21 @@ function aggiungiPreferito(squadra) {
     preferiti.push(squadra);
     salvaPreferiti();
     renderPreferiti();
+    renderSquadraFissa();
 }
 
 function rimuoviPreferito(idSquadra) {
     preferiti = preferiti.filter(p => p.id !== idSquadra);
     salvaPreferiti();
     renderPreferiti();
+    renderSquadraFissa();
 }
 
 // === Render ===
 const contenitoreSquadre = document.getElementById('lista-squadre');
 const contenitorePreferiti = document.getElementById('lista-preferiti');
 
-function creaCardBase(squadra, classiColonna = ['col-12', 'col-md-6', 'col-lg-4']) {
+function creaCardBase(squadra, classiColonna = ['col-12', 'col-md-6', 'col-lg-4'], mostraLogo = true, mostraSottotitolo = true) {
     const col = document.createElement('div');
     col.classList.add(...classiColonna);
 
@@ -120,10 +122,12 @@ function creaCardBase(squadra, classiColonna = ['col-12', 'col-md-6', 'col-lg-4'
     card.classList.add('card');
     col.appendChild(card);
 
-    const img = document.createElement('img');
-    img.src = squadra.logo;
-    img.classList.add('card-img-top');
-    card.appendChild(img);
+    if (mostraLogo) {
+        const img = document.createElement('img');
+        img.src = squadra.logo;
+        img.classList.add('card-img-top');
+        card.appendChild(img);
+    }
 
     const cardBody = document.createElement('div');
     cardBody.classList.add('card-body', 'd-flex', 'flex-column', 'align-items-center');
@@ -131,13 +135,18 @@ function creaCardBase(squadra, classiColonna = ['col-12', 'col-md-6', 'col-lg-4'
 
     const titolo = document.createElement('h5');
     titolo.classList.add('card-title', 'text-center');
+    if (!mostraSottotitolo) {
+        titolo.classList.add('testo-header', 'mb-5');
+    }
     titolo.textContent = squadra.nome;
     cardBody.appendChild(titolo);
 
-    const sottotitolo = document.createElement('p');
-    sottotitolo.classList.add('card-text', 'text-center', 'text-muted');
-    sottotitolo.textContent = squadra.lega + ' — ' + squadra.paese;
-    cardBody.appendChild(sottotitolo);
+    if (mostraSottotitolo) {
+        const sottotitolo = document.createElement('p');
+        sottotitolo.classList.add('card-text', 'text-center', 'text-muted');
+        sottotitolo.textContent = squadra.lega + ' — ' + squadra.paese;
+        cardBody.appendChild(sottotitolo);
+    }
 
     return { col, card, cardBody };
 }
@@ -180,6 +189,64 @@ function renderEventi(contenitore, eventi) {
     });
 }
 
+function creaColonneEventi(cardBody) {
+    const righe = document.createElement('div');
+    righe.classList.add('row', 'w-100');
+    cardBody.appendChild(righe);
+
+    const colProssimi = document.createElement('div');
+    colProssimi.classList.add('col-6');
+    const titoloProssimi = document.createElement('h6');
+    titoloProssimi.textContent = 'Prossimi eventi';
+    const listaProssimi = document.createElement('div');
+    colProssimi.appendChild(titoloProssimi);
+    colProssimi.appendChild(listaProssimi);
+
+    const colUltimi = document.createElement('div');
+    colUltimi.classList.add('col-6');
+    const titoloUltimi = document.createElement('h6');
+    titoloUltimi.textContent = 'Ultimi risultati';
+    const listaUltimi = document.createElement('div');
+    colUltimi.appendChild(titoloUltimi);
+    colUltimi.appendChild(listaUltimi);
+
+    righe.appendChild(colProssimi);
+    righe.appendChild(colUltimi);
+
+    return { listaProssimi, listaUltimi };
+}
+
+async function popolaEventi(idSquadra, listaProssimi, listaUltimi) {
+    const dettagli = await caricaDettagli(idSquadra);
+    if (typeof dettagli === 'string') {
+        listaProssimi.textContent = dettagli;
+        listaUltimi.textContent = dettagli;
+        return;
+    }
+    renderEventi(listaProssimi, dettagli.prossimi);
+    renderEventi(listaUltimi, dettagli.ultimi);
+}
+
+const contenitoreSquadraFissa = document.getElementById('squadra-fissa');
+
+async function renderSquadraFissa() {
+    contenitoreSquadraFissa.replaceChildren();
+    if (preferiti.length === 0) {
+        const p = document.createElement('p');
+        p.classList.add('text-center', 'text-muted');
+        p.textContent = 'Aggiungi una squadra ai preferiti per vederla qui.';
+        contenitoreSquadraFissa.appendChild(p);
+        return;
+    }
+
+    const squadra = preferiti[0];
+    const { col, cardBody } = creaCardBase(squadra, ['col-12'], false, false);
+    contenitoreSquadraFissa.appendChild(col);
+
+    const { listaProssimi, listaUltimi } = creaColonneEventi(cardBody);
+    await popolaEventi(squadra.id, listaProssimi, listaUltimi);
+}
+
 function renderPreferiti() {
     contenitorePreferiti.replaceChildren();
     preferiti.forEach(squadra => {
@@ -220,37 +287,8 @@ async function renderSquadre(squadre) {
         });
         cardBody.appendChild(bottone);
 
-        const righe = document.createElement('div');
-        righe.classList.add('row', 'w-100');
-        cardBody.appendChild(righe);
-
-        const colProssimi = document.createElement('div');
-        colProssimi.classList.add('col-6');
-        const titoloProssimi = document.createElement('h6');
-        titoloProssimi.textContent = 'Prossimi eventi';
-        const listaProssimi = document.createElement('div');
-        colProssimi.appendChild(titoloProssimi);
-        colProssimi.appendChild(listaProssimi);
-
-        const colUltimi = document.createElement('div');
-        colUltimi.classList.add('col-6');
-        const titoloUltimi = document.createElement('h6');
-        titoloUltimi.textContent = 'Ultimi risultati';
-        const listaUltimi = document.createElement('div');
-        colUltimi.appendChild(titoloUltimi);
-        colUltimi.appendChild(listaUltimi);
-
-        righe.appendChild(colProssimi);
-        righe.appendChild(colUltimi);
-
-        const dettagli = await caricaDettagli(squadra.id);
-        if (typeof dettagli === 'string') {
-            listaProssimi.textContent = dettagli;
-            listaUltimi.textContent = dettagli;
-            return;
-        }
-        renderEventi(listaProssimi, dettagli.prossimi);
-        renderEventi(listaUltimi, dettagli.ultimi);
+        const { listaProssimi, listaUltimi } = creaColonneEventi(cardBody);
+        await popolaEventi(squadra.id, listaProssimi, listaUltimi);
     });
 }
 
@@ -270,3 +308,4 @@ form.addEventListener('submit', async (e) => {
 });
 
 renderPreferiti();
+renderSquadraFissa();
