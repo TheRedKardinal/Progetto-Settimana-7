@@ -405,3 +405,20 @@ async function renderSquadre(squadre: Squadra[] | string) {
 }
 
 // EVENTI
+const form = document.getElementById("ricerca")!;
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const query: string = (document.getElementById("search") as HTMLInputElement)
+    .value;
+
+  document.getElementById("spinner-ricerca")!.hidden = false;
+  contenitoreSquadre.replaceChildren();
+
+  const risultato = await cercaSquadre(query);
+
+  document.getElementById("spinner-ricerca")!.hidden = true;
+  renderSquadre(risultato);
+});
+
+renderPreferiti();
+renderSquadraFissa();
